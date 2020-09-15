@@ -3,10 +3,35 @@
 #include <math.h>
 #include <string.h>
 
-// Finds the lowest denominator fraction that rounds to the given decimal value.
-void find_fraction( const char * numstr, const int nstart, const int dstart, int * numerator, int * denominator );
+int find_fraction( const char * numstr, const   int nstart, const int dstart, int * numerator );
 
-void find_fraction( const char * numstr, const int nstart, const int dstart, int * numerator, int * denominator ){
+int main(int argc, char * argv[]) {
+    int solved = 0;
+    int * numerators = malloc( argc * sizeof(int *) ); // The first index is never used.
+
+    for(int i=1; i<argc; i++) numerators[i]=0;
+
+    int d=1;
+
+    for(int i=1; i<argc; i++){
+        int d_prev=d;
+        d=find_fraction(argv[i],numerators[i],d,&numerators[i]);
+        if((d==d_prev)||(i==1)) continue;
+        else i=1;
+    }
+
+    printf("Solved:\n");
+    for(int i=1; i<argc; i++) {
+        printf("%d/%d =\t%lf ~=\t%s\n",numerators[i],d,(double)numerators[i]/d,argv[i]);
+    }
+
+    free(numerators);
+}
+
+// Finds the smallest numerator and denominator at least as large as nstart and dstart, respectively,
+// that form a fraction that, when rounded to the same precision, matches the decimal value given by numstr.
+// Returns the denominator, and stores the numerator in numerator.
+int find_fraction( const char * numstr, const int nstart, const int dstart, int * numerator ){
     double value = strtod(numstr,0);
     int dec_places = 0;
 
@@ -25,22 +50,17 @@ void find_fraction( const char * numstr, const int nstart, const int dstart, int
     int n = nstart;
     int d = dstart;
     double guess;
+    int solved = 0;
 
-    for(int solved=0; !solved;) {
+    while(!solved) {
         guess = (double) n / d;
+        //printf("Target:\t%s\nTrying: %d/%d =\t%lf\n",numstr,n,d,guess);
 
-        //printf("Trying: %d/%d =\t%lf\n",n,d,guess);
-
-        if(guess > value+max_err) d++;
-        else if (guess < value-max_err) n++;
+        if(guess < value-max_err) n++;
+        else if(guess > value+max_err) d++;
         else solved = 1;
     }
-    *numerator = n;
-    *denominator =  d;
-}
 
-int main(int argc, char * argv[]) {
-    int n,d;
-    find_fraction( argv[1], 0, 1, &n, &d );
-    printf("\nSolved: %d/%d =\t%lf\n",n,d,(double)n/d);
+    *numerator = n;
+    return d;
 }
