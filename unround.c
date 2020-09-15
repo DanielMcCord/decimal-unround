@@ -4,8 +4,14 @@
 #include <string.h>
 
 int find_fraction( const char * numstr, const   int nstart, const int dstart, int * numerator );
+void print_usage();
 
 int main(int argc, char * argv[]) {
+    if (argc == 1) {
+        print_usage(argv[0]);
+        exit(0);
+    }
+
     int solved = 0;
     int * numerators = malloc( argc * sizeof(int *) ); // The first index is never used.
 
@@ -63,4 +69,8 @@ int find_fraction( const char * numstr, const int nstart, const int dstart, int 
 
     *numerator = n;
     return d;
+}
+
+void print_usage(char * name) {
+    printf("usage: %s <values>\n", name);
 }
