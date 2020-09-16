@@ -3,6 +3,8 @@
 #include <math.h>
 #include <string.h>
 
+// A simple utility to find the lowest common denominator for a group of rounded decimal values.
+
 int find_fraction( const char * numstr, const   int nstart, const int dstart, int * numerator );
 void print_usage();
 
@@ -12,18 +14,20 @@ int main(int argc, char * argv[]) {
         exit(0);
     }
 
+    const int START_INDEX = 1;
     int solved = 0;
     int * numerators = malloc( argc * sizeof(int *) ); // The first index is never used.
 
-    for(int i=1; i<argc; i++) numerators[i]=0;
+    for(int i=START_INDEX; i<argc; i++) numerators[i]=0;
 
     int d=1;
 
     for(int i=1; i<argc; i++){
         int d_prev=d;
         d=find_fraction(argv[i],numerators[i],d,&numerators[i]);
-        if((d==d_prev)||(i==1)) continue;
-        else i=1;
+
+        // Restart the loop if d has changed, so previous numerators can be re-calculated.
+        if((d!=d_prev)&&(i!=START_INDEX)) i=START_INDEX-1;
     }
 
     printf("Solved:\n");
@@ -71,6 +75,7 @@ int find_fraction( const char * numstr, const int nstart, const int dstart, int 
     return d;
 }
 
+// Prints a short description of how to use the utility.
 void print_usage(char * name) {
     printf("usage: %s <values>\n", name);
 }
