@@ -5,10 +5,10 @@
 
 // A simple utility to find the lowest common denominator for a group of rounded decimal values.
 
-int find_fraction( const char * numstr, const   int nstart, const int dstart, int * numerator );
+int find_fraction( const char *numstr, const int nstart, const int dstart, int *numerator );
 void print_usage();
 
-int main(int argc, char * argv[]) {
+int main(int argc, char *argv[]) {
     if (argc == 1) {
         print_usage(argv[0]);
         exit(0);
@@ -16,7 +16,7 @@ int main(int argc, char * argv[]) {
 
     const int START_INDEX = 1;
     int solved = 0;
-    int * numerators = malloc( argc * sizeof(int *) ); // The first index is never used.
+    int *numerators = malloc( argc * sizeof(int *) ); // The first index is never used.
 
     for(int i=START_INDEX; i<argc; i++) numerators[i]=0;
 
@@ -31,6 +31,7 @@ int main(int argc, char * argv[]) {
     }
 
     printf("Solved:\n");
+
     for(int i=1; i<argc; i++) {
         printf("%d/%d =\t%lf ~=\t%s\n",numerators[i],d,(double)numerators[i]/d,argv[i]);
     }
@@ -38,15 +39,18 @@ int main(int argc, char * argv[]) {
     free(numerators);
 }
 
-// Finds the smallest numerator and denominator at least as large as nstart and dstart, respectively,
-// that form a fraction that, when rounded to the same precision, matches the decimal value given by numstr.
-// Returns the denominator, and stores the numerator in numerator.
-int find_fraction( const char * numstr, const int nstart, const int dstart, int * numerator ){
+// Finds the smallest numerator and denominator at least as large as `nstart` and `dstart`, respectively,
+// that form a fraction that, when rounded to the same precision, matches the decimal value `numstr`.
+// Returns `denominator`, and stores `numerator`.
+int find_fraction( const char *numstr, const int nstart, const int dstart, int *numerator ) {
     double value = strtod(numstr,0);
+
+    // Find number of digits after the decimal point
     int dec_places = 0;
 
     {
         int i;
+
         for(i=0;numstr[i]&&(numstr[i]!='.');i++);
 
         // skip decimal point and start counting after it
